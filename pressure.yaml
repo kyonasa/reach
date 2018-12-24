@@ -1,0 +1,97 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+resources:
+  my_flavor:
+    type: OS::Nova::Flavor
+    properties:
+      disk: 10
+      ephemeral: 0
+      is_public: True
+#      extra_specs:
+#        hw:cpu_policy: dedicated
+#        hw:cpu_thread_policy: isolate
+#        hw:numa_node.0: 1
+#        hw:mem_page_size: large
+#      name: my_flavor
+      ram: 4096
+      vcpus: 4
+  bootable_volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: 20
+      image: heat-test
+  fio_volume1:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+  fio_volume2:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+  fio_volume3:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+  fio_volume4:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+  mengph_network:
+    type: OS::Neutron::Net
+    properties:
+      name: test-mengph-heat
+  mengph_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: test-mengph-heat
+      network_id: { get_resource: mengph_network }
+      cidr: 192.168.101.0/24
+  RouterInterface:
+    type: OS::Neutron::RouterInterface
+    properties:
+#      port: String
+      router: share_router
+      subnet: { get_resource: mengph_subnet }
+  my_FIP1:
+    type: OS::Neutron::FloatingIP
+    properties:
+#      bandwidth: 4
+      floating_network_id: public_net
+      port_id: { get_resource: my_port1 }
+  my_port1:
+    type: OS::Neutron::Port
+    properties:
+      network_id: share_net
+      name: my_port_heat1
+      binding:vnic_type: normal
+  instance:
+    type: OS::Nova::Server
+    properties:
+      flavor: { get_resource: my_flavor }
+#      key_name: my_key
+#      name: mengph-heat
+      image: heat-test
+      availability_zone: nova
+      networks:
+        - port: { get_resource: my_port1 }
+#      block_device_mapping:
+#        - device_name: vda
+#          volume_id: { get_resource: bootable_volume }
+#          delete_on_termination: false
+#          bootable: true
+      block_device_mapping:
+        - device_name: vdb
+          volume_id: { get_resource: fio_volume1 }
+          delete_on_termination: false
+      block_device_mapping:
+        - device_name: vdc
+          volume_id: { get_resource: fio_volume2 }
+          delete_on_termination: false
+      block_device_mapping:
+        - device_name: vdd
+          volume_id: { get_resource: fio_volume3 }
+          delete_on_termination: false
+      block_device_mapping:
+        - device_name: vde
+          volume_id: { get_resource: fio_volume4 }
+          delete_on_termination: false

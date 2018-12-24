@@ -1,0 +1,61 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+parameters:
+  type:
+    type: string
+    description: type of a nic
+  name:
+    type: string
+    description: Name of a nic
+  network:
+    type: string
+    description: network of a nic
+resources:
+  my_flavor:
+    type: OS::Nova::Flavor
+    properties:
+      disk: 10
+      ephemeral: 0
+      is_public: True
+      extra_specs:
+        hw:cpu_policy: dedicated
+        hw:cpu_thread_policy: isolate
+        hw:numa_node.0: 1
+        hw:mem_page_size: large
+#      name: my_flavor
+      ram: 4096
+      vcpus: 4
+  bootable_volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+      image: TestVM
+  mengph_network:
+    type: OS::Neutron::Net
+    properties:
+      name: test-mengph-heat
+  mengph_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: test-mengph-heat
+      network_id: { get_resource: mengph_network }
+      cidr: 192.168.101.0/24
+  my_sriov_nic:
+    type: OS::Neutron::Port
+    properties:
+      network_id: {get_param: network}
+      name: {get_param: name}
+      binding:vnic_type:  {get_param: type}
+  instance:
+    type: OS::Nova::Server
+    properties:
+      flavor: { get_resource: my_flavor }
+#      key_name: my_key
+      name: mengph-heat
+      availability_zone: nova
+      networks:
+        - port: { get_resource: my_sriov_nic }
+      block_device_mapping:
+        - device_name: vda
+          volume_id: { get_resource: bootable_volume }
+          delete_on_termination: false

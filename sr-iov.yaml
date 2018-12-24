@@ -1,0 +1,19 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+parameters:
+  type:
+    type: string
+    description: type of a nic
+  name:
+    type: string
+    description: Name of a nic
+  network:
+    type: string
+    description: network of a nic
+resources:
+  my_sriov_nic:
+    type: OS::Neutron::Port
+    properties:
+      network_id: {get_param: network}
+      name: {get_param: name}
+      binding:vnic_type:  {get_param: type}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="2838e7c2-499c-4173-939a-46041900cd0b" name="10.100.217.200" url="http://10.100.217.200">
+        <fileTransfer host="10.100.217.200" port="22" rootFolder="/home/mengph" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="cb577d90-a27c-4703-bee6-eec3138b63c1" name="10.121.137.10" url="http://10.121.137.10">
+        <fileTransfer host="10.121.137.10" port="22" rootFolder="/home/mengph" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="62f8aeb3-a4da-48f6-ba61-1dadb6b764a5" name="10.100.17.108" url="http://10.100.17.108">
+        <fileTransfer host="10.100.17.108" port="22" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="b8efbade-204c-411b-a28d-a4e63fe029b3" name="10.121.136.222" url="http://10.121.136.222">
+        <fileTransfer host="10.121.136.222" port="22" rootFolder="/home/mengph" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="d27ab7c9-158e-4388-a824-0c54146852e9" name="10.121.136.221" url="http://10.121.136.221">
+        <fileTransfer host="10.121.136.221" port="22" rootFolder="/home/mengph" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

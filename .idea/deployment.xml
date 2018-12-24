@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="10.121.136.221">
+    <serverData>
+      <paths name="10.100.17.108">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/faked_nfvo" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="10.100.217.200">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/reach-test" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="10.121.136.221">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/rearch" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="10.121.136.222">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/rearch" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="10.121.137.10">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/reach" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

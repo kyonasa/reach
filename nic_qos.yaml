@@ -1,0 +1,144 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+resources:
+  my_flavor:
+    type: OS::Nova::Flavor
+    properties:
+      disk: 40
+      ephemeral: 0
+      is_public: True
+      extra_specs:
+#        hw:cpu_policy: dedicated
+#        hw:cpu_thread_policy: isolate
+#        hw:numa_node.0: 1
+#        hw:mem_page_size: large
+#      name: my_flavor
+      ram: 4096
+      vcpus: 4
+  bootable_volume1:
+    type: OS::Cinder::Volume
+    properties:
+      size: 40
+      image: heat-test-rally
+#      availability_zone: node5
+  bootable_volume2:
+    type: OS::Cinder::Volume
+    properties:
+      size: 40
+      image: heat-test-rally
+#      availability_zone: node5
+
+
+  BW_QoS_1:
+    type: OS::Neutron::QoSPolicy
+    properties:
+#      description: String
+      name: QoS1
+      shared: true
+#      tenant_id: String
+  BW_QoS_2:
+    type: OS::Neutron::QoSPolicy
+    properties:
+#      description: String
+      name: QoS2
+      shared: true
+#      tenant_id: String
+  BW_Rule_1:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      max_burst_kbps: 10000
+      max_kbps: 100000
+      policy: { get_resource: BW_QoS_1}
+#      tenant_id: String
+  BW_Rule_2:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      max_burst_kbps: 20000
+      max_kbps: 7000000
+      policy: { get_resource: BW_QoS_2 }
+#      tenant_id: String
+  mengph_network:
+    type: OS::Neutron::Net
+    properties:
+      name: test-mengph-heat
+      qos_policy: { get_resource: BW_QoS_2 }
+  mengph_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: test-mengph-heat
+      network_id: { get_resource: mengph_network }
+      cidr: 192.168.101.0/24
+  RouterInterface:
+    type: OS::Neutron::RouterInterface
+    properties:
+#      port: String
+      router: share_router
+      subnet: { get_resource: mengph_subnet }
+
+  my_FIP1:
+    type: OS::Neutron::FloatingIP
+    properties:
+#      bandwidth: 4
+      floating_network_id: public_net
+      port_id: { get_resource: my_port1 }
+  my_port1:
+    type: OS::Neutron::Port
+    properties:
+      network_id: share_net
+      name: my_port_heat1
+      binding:vnic_type: normal
+
+  my_FIP2:
+    type: OS::Neutron::FloatingIP
+    properties:
+#      bandwidth: 4
+      floating_network_id: public_net
+      port_id: { get_resource: my_port2 }
+  my_port2:
+    type: OS::Neutron::Port
+    properties:
+      network_id: share_net
+      name: my_port_heat2
+      binding:vnic_type: normal
+  my_sriov_nic1:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: mengph_network }
+      name: test-sriov-1
+      binding:vnic_type: direct
+  my_sriov_nic2:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: mengph_network }
+      name: test-sriov-2
+      binding:vnic_type: direct
+  instance1:
+    type: OS::Nova::Server
+    properties:
+      flavor: { get_resource: my_flavor }
+      key_name: heat_key
+      name: iperf-c
+      availability_zone: nova
+      networks:
+        - port: { get_resource: my_port1 }
+        - port: { get_resource: my_sriov_nic1 }
+#        - port: { get_resource: my_sriov_nic2 }
+      block_device_mapping:
+        - device_name: vda
+          volume_id: { get_resource: bootable_volume1 }
+          delete_on_termination: false
+
+  instance2:
+    type: OS::Nova::Server
+    properties:
+      flavor: { get_resource: my_flavor }
+      key_name: heat_key
+      name: iperf-s
+      availability_zone: nova
+      networks:
+        - port: { get_resource: my_port2 }
+        - port: { get_resource: my_sriov_nic2 }
+      block_device_mapping:
+        - device_name: vda
+          volume_id: { get_resource: bootable_volume2 }
+          delete_on_termination: false

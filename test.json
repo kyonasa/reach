@@ -1,0 +1,34 @@
+{
+    "description": "ft-config-backup-000",
+    "job_schedule": {
+        "status": "scheduled",
+        "event": "start"
+    },
+    "job_actions": [{
+            "max_retries": 0,
+            "max_retries_interval": 0,
+            "freezer_action": {
+                "backup_name": "222-1",
+                "container": "nova-222-1",
+                "compression": "gzip",
+                "download_limit": "-1",
+                "dry_run": false,
+                "engine_name":"tar",
+                "ftp_host":"10.20.0.5",
+                "ftp_username":"freezer",
+                "ftp_key":"123456",
+                "ftp_port": "21",
+                "hostname": "node-1",
+                "insecure": false,
+                "log_file": "/var/log/freezer/ft-config-backup-222-1.log",
+                "log_level": "info",
+                "snapshot": false,
+                "mode":"fs",
+                "path_to_backup": "/etc/nova",
+                "no_incremental": true,
+                "storage": "ftps",
+                "timeout": "300",
+                "upload_limit": "-1"
+            }
+    }]
+}

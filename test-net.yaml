@@ -1,0 +1,15 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+resources:
+  mengph_network:
+    type: OS::Neutron::ProviderNet
+    properties:
+      name: test-mengph-vxlan
+      network_type: vxlan
+#      physical_network: physnet2
+  mengph_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: test-mengph-vxlan
+      network_id: { get_resource: mengph_network }
+      cidr: 192.168.201.0/24

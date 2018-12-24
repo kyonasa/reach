@@ -1,0 +1,28 @@
+   {
+       "job_actions": [{
+            "freezer_action": {
+                 "action": "backup",
+                      "mode": "fs",
+                      "backup_name": "mengph_backup_nova.conf",
+                       "path_to_backup": "/etc/nova/nova.conf",
+                       "container": "/root/mengph-backup",
+                       "log_file": "/var/log/freezer/nova-inst-backup-ftps-001.log",
+                        "ftp_host": "10.121.223.14",
+                        "ftp_key": "123456",
+                        "ftp_username": "am313",
+                        "no_incremental": true,
+                        "storage": "ftps"
+                },
+               "max_retries": 3,
+               "max_retries_interval": 60
+         }],
+        "job_schedule": {
+            "status": "scheduled",
+            "event": "start"
+        },
+
+        "description": "nova.conf_backup mengph node-1",
+        "client_id": "node-1"
+   }
+
+

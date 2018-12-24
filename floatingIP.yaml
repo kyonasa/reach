@@ -1,0 +1,9 @@
+heat_template_version: 2013-05-23
+description: Simple template to boot from volume
+resources:
+resources:
+  my_FIP:
+    type: OS::Neutron::FloatingIP
+    properties:
+#      bandwidth: 4
+      floating_network_id: public_net
