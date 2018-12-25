@@ -150,16 +150,16 @@ class Boot_Shutdown_Start_Reboot_DeleteServer(utils.NovaScenario, cinder_utils.C
         """
         time_beg = time.time()
         server = self._boot_server(image, flavor, **kwargs)
-        priod=200
+        priod=600
         self.sync_time(time_beg=time_beg,priod=priod)
         self._stop_server(server)
-        priod=60
+        priod+=60
         self.sync_time(time_beg=time_beg, priod=priod)
         self._start_server(server)
-        priod=60
+        priod+=20
         self.sync_time(time_beg=time_beg, priod=priod)
         self._reboot_server(server)
-        priod=60
+        priod+=20
         self.sync_time(time_beg=time_beg, priod=priod)
         self._delete_server(server, force=force_delete)
 

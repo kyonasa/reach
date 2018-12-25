@@ -1,0 +1,26 @@
+NovaServers.boot_and_shutdown_start_reboot_delete_servers:
+  -
+    args:
+      flavor:
+          name: "boot"
+      image:
+          name: "xenial-server"
+      nics: ["net-id": "fdbbbe2a-2523-4935-9237-eaea06e0e962"]
+      availability_zone: "nova"
+    runner:
+      type: "constant"
+      times: 30
+      concurrency: 30
+    context:
+      users:
+        tenants: 3
+        users_per_tenant: 2
+      quotas:
+        neutron:
+          network: -1
+        nova:
+          cores: -1
+          ram: -1
+          instances: -1
+        cinder:
+          volumes: -1
