@@ -7,7 +7,7 @@ reach
 
 import  json
 from fuel_remote import ssh
-fuel_ip="10.121.137.11"
+fuel_ip="10.121.138.100"
 nodes = {}
 vm_name="IOE-1"
 import paramiko
@@ -48,7 +48,11 @@ def remote_cmd(fuel_ip,node,cmd):
         pkey = paramiko.RSAKey.from_private_key_file(key_path)
         ssh.connect(hostname=ip_addr, port=10022, username="root", pkey=pkey)
         stdin, stdout, stderr = ssh.exec_command(cmd)
-        return stdout.read()
+        out = stdout.read()
+        err = stderr.read()
+        if err:
+            print err
+        return out
 
     res=ssh(cmd=cmd)
     # print res
@@ -112,7 +116,7 @@ def check_network(networks,controller_node,ex_cmd=[]):
         if network_info[network].linked and ex_cmd:
             for cmd in ex_cmd[1]:
                 cmd_ex="ip netns exec %s ssh -i %s centos@%s "%(network_info[network].netns,ex_cmd[0],network_info[network].address)+cmd
-                print cmd_ex
+                print cmd_ex,controller_node
                 logging.info(cmd_ex)
                 for i in range(3):
                     ex_res=remote_cmd(fuel_ip=fuel_ip,node=controller_node,cmd=cmd_ex)
@@ -163,10 +167,11 @@ def fuck_trans_stdout_to_correct(fuck_output):
 
 
 
-def check_vm(fuel_ip,vm_name,ex_cmd=[]):
+def check_vm(fuel_ip,vm_name,ex_cmd=[],controller_node=""):
     cmd_show_vm="source /root/openrc && openstack server show %s -f json" %vm_name
-    get_nodes()
-    controller_node=get_controller_node()
+    if not controller_node:
+        get_nodes()
+        controller_node=get_controller_node()
     # controller_node="node-3"
     try:
         tmp_res=remote_cmd(fuel_ip=fuel_ip,node=controller_node,cmd=cmd_show_vm)

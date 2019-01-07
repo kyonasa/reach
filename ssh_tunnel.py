@@ -8,11 +8,8 @@ import paramiko
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 import fuel_remote
-import glance_hello
-import time
-import  json
-import xmltodict
-import threading
+from VIM.glance import glance_hello
+
 
 def remote_cmd(fuel_ip,node,cmd,bind_port=10022):
 
@@ -95,12 +92,12 @@ def ssh_tunnel(jump_host,remote_host,bind_port):
 
 @ssh_tunnel(jump_host="10.121.137.11",remote_host="node-8",bind_port=5000)
 def glance_setup_v6(url):
-    glance=glance_hello.setup(url=url)
+    glance= glance_hello.setup(url=url)
     return glance
 
 @ssh_tunnel(jump_host="10.121.137.11",remote_host="node-8",bind_port=5000)
 def glance_get_image_v6(images_client,name="centos"):
-    image=glance_hello.image_get(images_client=images_client,name=name)
+    image= glance_hello.image_get(images_client=images_client, name=name)
     return image
 
 url="http://127.0.0.1:5000/v2.0"

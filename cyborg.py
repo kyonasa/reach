@@ -9,7 +9,7 @@ import paramiko
 import fuel_remote
 import json
 from check_vm import check_vm
-import glance_hello
+from VIM.glance import glance_hello
 import xmltodict
 import time
 nodes = {}
@@ -98,7 +98,8 @@ def get_nodes():
     cmd = "fuel nodes"
     res = fuel_remote.ssh(fuel_ip, cmd=cmd)
     for i in range(2, len(res)):
-        nodes["node-" + res[i].split("|")[0].strip()] = Nodes(name="node-" + res[i].split("|")[0].strip(),roles=res[i].split("|")[6].rstrip().split(","))
+        if res[i].split("|")[1].strip()=="ready":
+            nodes["node-" + res[i].split("|")[0].strip()] = Nodes(name="node-" + res[i].split("|")[0].strip(),roles=res[i].split("|")[6].rstrip().split(","))
 
 
 class Nodes(object):
@@ -235,8 +236,8 @@ def _create_image(fuel_ip,controller_node,image_name,image_url):
 def _check_image(fuel_ip,controller_node,image_name="cyborg_image",keystone_url=""):
     '''check the status of image '''
     try:
-        glance_client=glance_hello.setup(keystone_url)
-        image=glance_hello.image_get(glance_client,name=image_name)
+        glance_client= glance_hello.setup(keystone_url)
+        image= glance_hello.image_get(glance_client, name=image_name)
         image["id"]
         print "fuckoff"
         if image:
@@ -280,8 +281,16 @@ def _create_flavor_cli(fuel_ip,controller_node,spec=["hw:accelerator_device=Co-p
     cmd_check_flavor="source /root/openrc && openstack flavor show %s -f json" %flavor
     try:
         if remote_cmd(fuel_ip=fuel_ip,node=controller_node,cmd=cmd_create_flavor):
+            specs={}
             for item in spec:
-                cmd_set_flavor_spec = "source /root/openrc && openstack flavor set %s --property %s" % (flavor, item)
+                key=item.split("=")[0]
+                value=item.split("=")[1]
+                if key in specs:
+                    specs[key]+=(","+value)
+                else:
+                    specs[key]=value
+            for key in specs.keys():
+                cmd_set_flavor_spec = "source /root/openrc && openstack flavor set %s --property %s" % (flavor, key+"="+specs[key])
                 print cmd_set_flavor_spec
                 remote_cmd(fuel_ip=fuel_ip,node=controller_node,cmd=cmd_set_flavor_spec)
     except Exception, error:
@@ -324,7 +333,7 @@ def check_cli_deployables_attach_vm(fuel_ip,controller_node,devices_type=[["Co-p
     for i in range(7):
         try :
             time.sleep(5)
-            r=check_vm(fuel_ip=fuel_ip,vm_name=vm["name"],ex_cmd=[key[1],cmd_check_device_in_vm])
+            r=check_vm(fuel_ip=fuel_ip,vm_name=vm["name"],ex_cmd=[key[1],cmd_check_device_in_vm],controller_node=controller_node)
             '''check vm status include network and using cmd inner the vm to check the pci device was attched weather or not '''
             print r
             print "check_time: %d" %i
@@ -500,6 +509,7 @@ def create_firmware(fuel_ip,controller_node,firmware_url,keystone_url):
     try:
         _set_api_version(fuel_ip=fuel_ip, controller_node=controller_node,api_v="2")
         cmd_create_logic="source /root/openrc && glance image-create --file /root/%s --disk-format raw --container-format bare --name cyborg-logic --tags firmware" %firmware_url.split("/")[-1]
+        print cmd_create_logic
         print remote_cmd(fuel_ip=fuel_ip, node=controller_node,cmd=cmd_create_logic)
     except Exception,error:
         print error,"loaction: create firmware"
@@ -513,7 +523,7 @@ def cyborg_test(fuel_ip):
         print time.ctime()
         get_nodes()
         controller_node=get_controller_node()
-        # controller_node="node-7"
+        controller_node="node-1"
         print controller_node
         keystone_url = get_keystone_url(fuel_ip=fuel_ip, controller_node=controller_node)
         print keystone_url

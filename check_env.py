@@ -21,7 +21,7 @@ import nova_hello
 import cinder_hellow
 import neutron_hello
 
-fuel_ip="10.121.137.12"
+fuel_ip="10.121.137.11"
 keystone_url_10_1="http://10.121.137.50:5000/v2.0"
 keystone_url_10_2="http://10.121.137.80:5000/v2.0"
 keystone_url_10_3="http://10.121.137.54:5000/v2.0"

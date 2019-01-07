@@ -14,7 +14,7 @@ from cyborg import create_firmware
 JSONSCHEMA_VALIDATOR = jsonschema.Draft4Validator
 FORMAT_CHECKER = jsonschema.draft4_format_checker
 
-br_ex_address="fd00:dead:beef:58::171"
+br_ex_address="fd00:dead:beef:57::5"
 keystone_url_12_v6="http://[%s]:5000/v2.0/tokens" %br_ex_address
 cyborg_url_12_v6="http://[%s]:6666/v1/" %br_ex_address
 firmware_url="http://10.121.136.222/Lenovo_thinkcloud_shell_role_20181213_015432.shr"
@@ -201,6 +201,19 @@ def delete_cyborg_accelerators(headers=headers):
     print "++++++++++++++++++++++++++++++++"
     validate_res(schema=cyborg_sechma.schema_delete_deployables, resp=resp, body=body)
 
+@sayname
+def post_cyborg_deployables_program(header=headers):
+    verify = False
+    data = json.dumps(
+        {"uuid":"b1df47f6-74c1-488f-9544-c271ef301374","firmware_uuid":"63eb6d69-8454-4732-a6c9-7d0b9ed321c1"})
+    resp = requests.post(url=cyborg_url_12_v6+"deployables/program/", data=data,headers=headers,
+                         verify=verify)
+    # body = json.loads(resp.content)
+
+    print "++++++++++++++++++++++++++++++++"
+    print resp
+    print "++++++++++++++++++++++++++++++++"
+    # validate_res(schema=cyborg_sechma.schema_post_accelerators, resp=resp, body=body)
 
 def validate_res(schema,resp,body):
     body_schema = schema.get('response_body')
@@ -213,6 +226,10 @@ def validate_res(schema,resp,body):
         print msg
         # raise exceptions.InvalidHTTPResponseBody(msg)
 
+
+post_cyborg_deployables_program(headers)
+
+
 try:
     post_cyborg_deployables(headers)
     post_cyborg_accelerators(headers)
@@ -222,7 +239,8 @@ try:
     get_cyborg_accelerators_all(headers)
     patch_cyborg_deployables_update(headers)
     patch_cyborg_accelerators_update(headers)
-    firmware_1 = create_firmware(fuel_ip="10.121.137.11", controller_node="node-3", keystone_url=keystone_url_12_v6,
+    post_cyborg_deployables_program(headers)
+    firmware_1 = create_firmware(fuel_ip="10.121.137.11", controller_node="node-6", keystone_url=keystone_url_12_v6,
                                  firmware_url=firmware_url)
     firmware_uuid = firmware_1[0]["id"]
     print firmware_uuid
