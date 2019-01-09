@@ -32,7 +32,23 @@ def check_net_cli(fuel_ip,controller_node,net_name):
         raise error
 
 def update_net_cli(fuel_ip,controller_node,net_name,element):
-    cmd_update_net="source /root/openrc && neutron net-show %s -f json"
+    '''uptade net mtu or/and qos'''
+    updates=""
+    if "mtu" in element.keys():
+        updates+=" --mtu %s"%element["mtu"]
+    if "qos" in element.keys():
+        if element["qos"]=="no":
+            updates+=" --no-qos-policy"
+        else:
+            updates+=" --qos-policy %s" %element["qos"]
+    cmd_update_net="source /root/openrc && neutron net-update %s"%net_name +updates
+    print cmd_update_net
+    try:
+        remote_cmd(fuel_ip=fuel_ip, node=controller_node, cmd=cmd_update_net)
+    except Exception,error:
+        raise error
+    finally:
+        return check_net_cli(fuel_ip=fuel_ip,controller_node=controller_node,net_name=net_name)
 
 def create_net(fuel_ip,controller_node,net_name="test-mengph-0",ra_type="ra-advertisement",type="vlan",physical_network="physnet2",segmentation_id="1010",vlan_transparent=True,mtu=9000):
     res=check_net_cli(fuel_ip=fuel_ip,controller_node=controller_node,net_name=net_name)
@@ -63,8 +79,10 @@ if __name__ == '__main__':
     keystone_url_12_v6 = "http://[%s]:5000/v2.0/tokens" % br_ex_address
     net_name="test-mengph-1"
     try:
-        net=create_net(fuel_ip=fuel_ip,controller_node=controller_node,net_name=net_name)
+        net=create_net(fuel_ip=fuel_ip,controller_node=controller_node,net_name=net_name,segmentation_id="729")
         print net
+        renet=update_net_cli(fuel_ip=fuel_ip,controller_node=controller_node,net_name=net_name,element={"mtu":3400,"qos":"no"})
+        print renet
 
     except Exception,error:
         print error
